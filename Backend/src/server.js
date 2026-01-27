@@ -3,31 +3,32 @@ import ENV from "./lib/env.js";
 import path from "path";
 import connectDB from "./lib/db.js";
 import cors from "cors";
-import serve from "inngest/express";
-import { inngest } from "./lib/inngest.js";
+import { serve } from "inngest/express";
+import { inngest, functions } from "./lib/inngest.js";
 
 const app = express();
-
 const __dirname = path.resolve();
 
 // middleware
 app.use(express.json());
-// credentials: true => means allow browser to allow cookies on req
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
-app.use("api/inngest", serve({ client: inngest, functions }));
 
-app.get("/", (req, res) => {
+// Inngest endpoint
+app.use("/api/inngest", serve({ client: inngest, functions }));
+
+app.get("/api", (req, res) => {
   res.status(200).json({ msg: "main" });
 });
+
 app.get("/health", (req, res) => {
   res.status(200).json({ msg: "health" });
 });
+
 app.get("/box", (req, res) => {
   res.status(200).json({ msg: "success from backend" });
 });
 
-// If we are in Production
-
+// Production frontend
 if (ENV.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
@@ -38,11 +39,11 @@ if (ENV.NODE_ENV === "production") {
 
 connectDB()
   .then(() => {
-    console.log("Database connection established...");
-    app.listen(ENV.PORT, () => {
-      console.log("Server is successfully listening on port 3000...");
+    console.log("Database connection established");
+    app.listen(ENV.PORT || 3000, () => {
+      console.log(`Server running on port ${ENV.PORT}`);
     });
   })
   .catch((err) => {
-    console.error("Database cannot be connected!!");
+    console.error("❌ Database connection failed:", err);
   });

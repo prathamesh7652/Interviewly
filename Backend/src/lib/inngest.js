@@ -1,6 +1,6 @@
 import { Inngest } from "inngest";
-import { connectDB } from "../lib/db.js";
-import User from "../models/User.js";
+import connectDB from "../lib/db.js";
+import User from "../model/User.js";
 
 export const inngest = new Inngest({ id: "interviewly" });
 
