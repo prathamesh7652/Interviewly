@@ -1,33 +1,39 @@
-import express from "express"
+import express from "express";
 import ENV from "./lib/env.js";
-import path from "path"
+import path from "path";
+import connectDB from "./lib/db.js";
 
-const app =  express ();
+const app = express();
 
-const ___dirname = path.resolve();
+const __dirname = path.resolve();
 
-app.get ("/" , (req,res) => {
-    res.status(200).json({msg: "main"})
+app.get("/", (req, res) => {
+  res.status(200).json({ msg: "main" });
 });
-app.get ("/health" , (req,res) => {
-    res.status(200).json({msg: "health"})
+app.get("/health", (req, res) => {
+  res.status(200).json({ msg: "health" });
 });
-app.get ("/box" , (req,res) => {
-    res.status(200).json({msg: "success from backend"})
+app.get("/box", (req, res) => {
+  res.status(200).json({ msg: "success from backend" });
 });
-
-
 
 // If we are in Production
 
-if(ENV.NODE_ENV==="production"){
-    app.use(express.static(path.join(___dirname, "../frontend/dist")))
+if (ENV.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-    app.get("/{*any}" , (req,res) =>{
-        res.sendFile(path.join(___dirname, "../frontend" ,"dist" ,"index.html"))
-    } )
+  app.get("/{*any}", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
 }
 
-
-
-app.listen(ENV.PORT, () => console.log("Server Is Running On Port:",ENV.PORT))
+connectDB()
+  .then(() => {
+    console.log("Database connection established...");
+    app.listen(ENV.PORT, () => {
+      console.log("Server is successfully listening on port 3000...");
+    });
+  })
+  .catch((err) => {
+    console.error("Database cannot be connected!!");
+  });
