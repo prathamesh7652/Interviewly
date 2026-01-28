@@ -1,6 +1,7 @@
 import { Inngest } from "inngest";
-import connectDB from "../lib/db.js";
-import User from "../model/User.js";
+import { connectDB } from "./db.js";
+import User from "../models/User.js";
+import { deleteStreamUser, upsertStreamUser } from "./stream.js";
 
 export const inngest = new Inngest({ id: "interviewly" });
 
@@ -24,6 +25,12 @@ const syncUser = inngest.createFunction(
     };
 
     await User.create(newUser);
+
+    await upsertStreamUser({
+      id: newUser.clerkId.toString(),
+      name: newUser.name,
+      image: newUser.profileImage,
+    });
   },
 );
 
@@ -66,6 +73,8 @@ const deleteUserFromDB = inngest.createFunction(
     await connectDB();
 
     const { id } = event.data;
+    await User.deleteOne({ clerkId: id });
+    await deleteStreamUser(id.toString());
   },
 );
 
