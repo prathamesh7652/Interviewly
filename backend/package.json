@@ -19,6 +19,7 @@
     "interviewly": "file:..",
     "mongoose": "^9.1.4",
     "nodemon": "^3.1.11",
+    "stream-chat": "^9.30.1",
     "talent-iq": "file:.."
   }
 }
