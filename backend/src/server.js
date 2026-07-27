@@ -8,6 +8,7 @@ import { inngest, functions } from "./lib/inngest.js";
 import { clerkMiddleware } from "@clerk/express";
 import chatRoutes from "./routes/chatRoutes.js";
 import sessionRoutes from "./routes/sessionRoute.js";
+import executeRoutes from "./routes/executeRoute.js";
 
 const app = express();
 const __dirname = path.resolve();
@@ -21,6 +22,7 @@ app.use(clerkMiddleware()); // this adds auth field to request object: req.auth(
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/execute", executeRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ msg: "api is up and running" });
